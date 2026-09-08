@@ -1,0 +1,6 @@
+[project]
+name = "minesweeper"
+version = "0.1"
+dependencies = [
+    "pygame==2.6.1",
+]
