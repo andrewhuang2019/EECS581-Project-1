@@ -1,6 +1,6 @@
 # Example file showing a basic pygame "game loop"
 import pygame as pg
-from enum import Enum
+from defs import *
 
 
 SCALE = 6
@@ -8,25 +8,6 @@ SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
 sprites = {}
-class Sprite(Enum):
-    REVEALED = 0
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    FIVE = 5
-    SIX = 6
-    SEVEN = 7
-    EIGHT = 8
-    COVERED = 9
-    FLAG = 10
-    MINE = 11
-    CLICKED_MINE = 12
-    VERITY_SMILE = 13
-    VERITY_SUNGLASSES = 14
-    VERITY_SURPRISED = 15
-    VERITY_DEAD = 16
-    BACKGROUND = 17
 
 # return a pg surface scaled by SCALE
 def scale_surface(surface):
