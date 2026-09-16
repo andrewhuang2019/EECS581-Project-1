@@ -81,18 +81,25 @@ def init_sprites():
                       (Sprite.EIGHT, (3, 0))]
 
     for name, pos in name_locations:
+        save_sprites_from_sheet(name, (2,2), pos, (17, 17), (16, 16), sprite_sheet)
+
+# helper to save sheets given the name and relative position of the sprites on the sheet
+# name is sprite enum
+# absolute_position is the coordinate of the top left pixel of the top left sprite in the set
+# spacing is the coordinate representing the horizontal and vertical distance between sprites
+# size is the coordinate representing the size of the sprite
+def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet):
         surf = pg.Surface((16, 16))
 
         # top left sprite starts at (2, 2), have 1 pixel spacing, and are 16x16
         # use this to find top left of each sprite, 16,16 is the size
-        sprite_sheet_location = (2 + pos[1] * 17, 2 + pos[0] * 17, 16, 16)
-        surf.blit(sprite_sheet, dest, area=sprite_sheet_location)
+        sprite_sheet_location = (absolute_position[0] + relative_position[1] * spacing[0],
+                                 absolute_position[1] + relative_position[0] * spacing[1],
+                                 size[0], size[1])
+        surf.blit(sprite_sheet, (0,0), area=sprite_sheet_location)
         surf = scale_surface(surf)
 
-        # use .value for testing
-        # TODO: remove
         sprites[name.value] = surf
-        pass
 
 def main():
     # pygame setup
@@ -104,7 +111,9 @@ def main():
 
     init_sprites()
 
+    i = 0
     while running:
+        i += 1
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pg.event.get():
@@ -117,12 +126,12 @@ def main():
         # test
         for r in range(10):
             for c in range(10):
-                draw_to_tile(screen, sprites[(10 * r + c) % 13], (c,r))
+                draw_to_tile(screen, sprites[(10 * r + c + i) % 13], (c,r))
         
         # flip() the display to put your work on screen
         pg.display.flip()
         
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(5)  # limits FPS to 60
 
     pg.quit()
 
