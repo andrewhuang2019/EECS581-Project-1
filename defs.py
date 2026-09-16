@@ -22,7 +22,7 @@ class Sprite(Enum):
 
 class Tile():
 
-    def __init__(self):
+    def __init__(self, row, col):
         # for display purposes, the number doesn't matter until the tile is revealed
         # if revealed, any value 0 - 8 is considered to be valid, anything else is assumed to be 0 (blank, revealed space)
         self.value: int = -1
@@ -34,20 +34,25 @@ class Tile():
         # whether or not a tile is flagged
         # shouldn't be able to flag a revealed tile
         self.is_flagged: bool = False
+        # row of the tile
+        self.row: int = row;
+        # column of the tile
+        self.col: int = col;
 
 class Board():
 
-    def __init__(self):
+    def __init__(self, mines):
         # 10x10 2d array of tiles
         # initialize with default tiles
         self.tiles = []
         for r in range(10):
             row = []
             for c in range(10):
-                row.append(Tile())
+                row.append(Tile(r,c))
             self.tiles.append(row)
 
         self.is_game_won = False
         self.is_game_lost = False
         self.flags_total = -1
-        self.flags_remaining = -1
+        self.flags_remaining = mines 
+        self.mines = mines;

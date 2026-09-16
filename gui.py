@@ -3,7 +3,7 @@ import pygame as pg
 from defs import *
 
 
-SCALE = 6
+SCALE = 3 
 SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
@@ -150,7 +150,7 @@ def main():
     init_sprites()
 
     # test
-    board = Board()
+    board = Board(10)
     board.tiles[0][0].is_revealed = True
     board.tiles[0][1].is_flagged = True
     board.tiles[0][2].is_mine = True
