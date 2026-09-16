@@ -10,10 +10,12 @@ SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
 
+# Function written by John Rader
 # return a pg surface scaled by SCALE
 def scale_surface(surface):
     return pg.transform.scale_by(surface, SCALE)
 
+# Function written by John Rader
 # blit a given surface to screen
 # should only be used to draw the tile sprites
 def draw_to_tile(surface, tile_coords):
@@ -28,6 +30,7 @@ def draw_to_tile(surface, tile_coords):
 
     screen.blit(surface, pixel_coords)
 
+# Function written by John Rader
 # load all sprites into memory (sprites dict), then scale
 # TODO: add the rest of the needed sprites
 def init_sprites():
@@ -81,6 +84,7 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
+# Function written by John Rader
 # draw from given board
 def draw_board(board):
     for r in range(10):
@@ -119,7 +123,7 @@ def draw_board(board):
             # use (c,r) for (x,y) matching
             draw_to_tile(surf, (c, r))
 
-
+# Function written by John Rader
 # helper to save sheets given the name and relative position of the sprites on the sheet
 # name is sprite enum
 # absolute_position is the coordinate of the top left pixel of the top left sprite in the set
@@ -139,6 +143,7 @@ def save_sprites_from_sheet(name, absolute_position, relative_position, spacing,
 
         sprites[name.value] = surf
 
+# Function outline sourced from pygame tutorial
 # core drawing loop
 def main():
     # pygame setup
