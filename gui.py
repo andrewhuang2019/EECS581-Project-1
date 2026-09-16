@@ -23,7 +23,10 @@ class Sprite(Enum):
     MINE = 11
     CLICKED_MINE = 12
     VERITY_SMILE = 13
-    BACKGROUND = 14
+    VERITY_SUNGLASSES = 14
+    VERITY_SURPRISED = 15
+    VERITY_DEAD = 16
+    BACKGROUND = 17
 
 # return a pg surface scaled by SCALE
 def scale_surface(surface):
@@ -80,8 +83,21 @@ def init_sprites():
                       (Sprite.SEVEN, (2, 3)),
                       (Sprite.EIGHT, (3, 0))]
 
+    abs_pos = (2, 2)
+    offset = (17, 17)
+    size = (16, 16)
     for name, pos in name_locations:
-        save_sprites_from_sheet(name, (2,2), pos, (17, 17), (16, 16), sprite_sheet)
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
+
+    # load 16x16 verities
+    name_locations = [(Sprite.VERITY_SMILE, (0,0)),
+                      (Sprite.VERITY_SUNGLASSES, (0, 1)),
+                      (Sprite.VERITY_SURPRISED, (1, 0)),
+                      (Sprite.VERITY_DEAD, (1,1))]
+
+    abs_pos = (133, 2)
+    for name, pos in name_locations:
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
 # helper to save sheets given the name and relative position of the sprites on the sheet
 # name is sprite enum
@@ -126,7 +142,7 @@ def main():
         # test
         for r in range(10):
             for c in range(10):
-                draw_to_tile(screen, sprites[(10 * r + c + i) % 13], (c,r))
+                draw_to_tile(screen, sprites[(10 * r + c) % 17], (c,r))
         
         # flip() the display to put your work on screen
         pg.display.flip()
