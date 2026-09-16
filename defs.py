@@ -55,4 +55,5 @@ class Board():
         self.is_game_lost = False
         self.flags_total = -1
         self.flags_remaining = mines 
-        self.mines = mines;
+        self.num_revealed = 0;
+        self.mines = mines
