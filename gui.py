@@ -8,6 +8,7 @@ SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
 sprites = {}
+screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
 
 # return a pg surface scaled by SCALE
 def scale_surface(surface):
@@ -15,7 +16,7 @@ def scale_surface(surface):
 
 # blit a given surface to screen
 # should only be used to draw the tile sprites
-def draw_to_tile(screen, surface, tile_coords):
+def draw_to_tile(surface, tile_coords):
     # determine upper left corner coords of the tile at tile_coords
 
     # top left tile's top left coord is (16, 56)
@@ -50,7 +51,7 @@ def init_sprites():
     # load 16x16 sprites
     # track sprite type and position on sprite sheet
     # (name, pos(r, c))
-    name_locations = [(Sprite.COVERED, (0, 0)),
+    name_locations = [(Sprite.UNREVEALED, (0, 0)),
                       (Sprite.REVEALED, (0, 1)),
                       (Sprite.FLAG, (0, 2)),
                       (Sprite.MINE, (0, 3)),
@@ -80,11 +81,51 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
+# draw from given board
+def draw_board(board):
+    for r in range(10):
+        for c in range(10):
+            tile = board.tiles[r][c]
+
+            sprite_to_draw = Sprite.VERITY_DEAD # if this gets drawn then check for error
+            pass_value = False
+
+            # if the tile is flagged, then draw the flag
+            if (tile.is_flagged):
+                sprite_to_draw = Sprite.FLAG
+            # if the tile isn't revealed, then just draw the unrevealed tile
+            elif (not tile.is_revealed):
+                sprite_to_draw = Sprite.UNREVEALED
+            # if it is revealed, then check the value to see if it is [0, 8]
+            else:
+                if (tile.value >= 0 and tile.value <= 8):
+                    sprite_to_draw = tile.value
+                    pass_value = True
+                # if it is revealed and also a mine, draw the revealed mine tile
+                elif (tile.is_mine):
+                    sprite_to_draw = Sprite.CLICKED_MINE
+                else:
+                    sprite_to_draw = Sprite.REVEALED
+
+            # get surface to draw
+            surf = None
+
+            # use this if passing in an integer instead of sprite enum
+            if(pass_value):
+                surf = sprites[sprite_to_draw]
+            else:
+                surf = sprites[sprite_to_draw.value]
+
+            # use (c,r) for (x,y) matching
+            draw_to_tile(surf, (c, r))
+
+
 # helper to save sheets given the name and relative position of the sprites on the sheet
 # name is sprite enum
 # absolute_position is the coordinate of the top left pixel of the top left sprite in the set
 # spacing is the coordinate representing the horizontal and vertical distance between sprites
 # size is the coordinate representing the size of the sprite
+# if pass_value is set, lookup with name, not name.value
 def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet):
         surf = pg.Surface((16, 16))
 
@@ -98,19 +139,29 @@ def save_sprites_from_sheet(name, absolute_position, relative_position, spacing,
 
         sprites[name.value] = surf
 
+# core drawing loop
 def main():
     # pygame setup
     pg.init()
 
-    screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
     clock = pg.time.Clock()
     running = True
 
     init_sprites()
 
-    i = 0
+    # test
+    board = Board()
+    board.tiles[0][0].is_revealed = True
+    board.tiles[0][1].is_flagged = True
+    board.tiles[0][2].is_mine = True
+    board.tiles[0][2].is_flagged = True
+    board.tiles[0][3].is_mine = True
+    board.tiles[0][3].is_revealed = True
+    for i in range(8):
+        board.tiles[1][i].value = i + 1
+        board.tiles[1][i].is_revealed = True
+
     while running:
-        i += 1
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pg.event.get():
@@ -121,14 +172,12 @@ def main():
         screen.blit(sprites[Sprite.BACKGROUND], (0,0))
 
         # test
-        for r in range(10):
-            for c in range(10):
-                draw_to_tile(screen, sprites[(10 * r + c) % 17], (c,r))
+        draw_board(board)
         
         # flip() the display to put your work on screen
         pg.display.flip()
         
-        clock.tick(5)  # limits FPS to 60
+        clock.tick(60)  # limits FPS to 60
 
     pg.quit()
 

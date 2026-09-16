@@ -10,7 +10,7 @@ class Sprite(Enum):
     SIX = 6
     SEVEN = 7
     EIGHT = 8
-    COVERED = 9
+    UNREVEALED = 9
     FLAG = 10
     MINE = 11
     CLICKED_MINE = 12
@@ -46,3 +46,8 @@ class Board():
             for c in range(10):
                 row.append(Tile())
             self.tiles.append(row)
+
+        self.is_game_won = False
+        self.is_game_lost = False
+        self.flags_total = -1
+        self.flags_remaining = -1
