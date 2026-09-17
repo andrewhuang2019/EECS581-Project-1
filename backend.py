@@ -41,3 +41,10 @@ def get_surrounding_tiles(tile: Tile, board: Board):
 
     return surrounding_tiles
 
+def right_click_tile(tile: Tile, board: Board):
+    if not tile.is_revealed:
+        tile.is_flagged = not tile.is_flagged
+        if tile.is_flagged:
+            board.flags_remaining -= 1
+        else:
+            board.flags_remaining += 1
