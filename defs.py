@@ -19,6 +19,7 @@ class Sprite(Enum):
     VERITY_SURPRISED = 15
     VERITY_DEAD = 16
     BACKGROUND = 17
+    CURSOR = 18
 
 class Tile():
 

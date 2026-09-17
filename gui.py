@@ -112,6 +112,12 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
+    # load 8x8 cursor arrow
+    abs_pos = (79, 11)
+    offset = (9, 9)
+    size = (8, 8)
+    save_sprites_from_sheet(Sprite.CURSOR, abs_pos, (0,0), offset, size, sprite_sheet)
+
 # draw from given board
 def draw_board(board):
     for r in range(10):
@@ -158,7 +164,7 @@ def draw_board(board):
 # size is the coordinate representing the size of the sprite
 # if pass_value is set, lookup with name, not name.value
 def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet):
-        surf = pg.Surface((16, 16))
+        surf = pg.Surface(size)
 
         # top left sprite starts at (2, 2), have 1 pixel spacing, and are 16x16
         # use this to find top left of each sprite, 16,16 is the size
@@ -214,12 +220,29 @@ def main():
         # test
         draw_board(board)
         
+        draw_cursor(board)
+
         # flip() the display to put your work on screen
         pg.display.flip()
         
         clock.tick(60)  # limits FPS to 60
 
     pg.quit()
+
+# draw cursor below an unrevealed tile
+def draw_cursor(board):
+    # test drawing cursor
+    mouse_pos = pg.mouse.get_pos()
+    tile_coords = get_clicked_tile(mouse_pos)
+
+    if (tile_coords is None):
+        return
+
+    if (board.tiles[tile_coords[1]][tile_coords[0]].is_revealed):
+        return
+
+    one_below = (tile_coords[0], tile_coords[1] + 1)
+    draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
 
 if __name__ == "__main__":
     main()
