@@ -1,4 +1,5 @@
-# Example file showing a basic pygame "game loop"
+#gui.py
+
 import pygame as pg
 from defs import *
 
@@ -27,6 +28,36 @@ def draw_to_tile(surface, tile_coords):
     pixel_coords[1] *= SCALE
 
     screen.blit(surface, pixel_coords)
+
+
+# helper that returns tile coords for a given mouse position on click
+def get_clicked_tile(mouse_pos):
+
+    # convert mouse pos to tile coords
+    x, y = mouse_pos
+
+    # scale down to original size
+    x //= SCALE
+    y //= SCALE
+
+    # adjust for the offset of the top left tile
+    x -= 16
+    y -= 56
+
+    # if the click is outside of the board, return None
+    if (x < 0 or y < 0 or x >= 160 or y >=160):
+        return None
+
+    # convert to tile coords
+    x //= 16
+    y //= 16
+
+    # return (col, row) as a tuple
+    col = x
+    row = y
+
+    return (col, row)
+
 
 # load all sprites into memory (sprites dict), then scale
 # TODO: add the rest of the needed sprites

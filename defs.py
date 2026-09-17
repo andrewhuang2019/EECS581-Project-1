@@ -35,9 +35,9 @@ class Tile():
         # shouldn't be able to flag a revealed tile
         self.is_flagged: bool = False
         # row of the tile
-        self.row: int = row;
+        self.row: int = row
         # column of the tile
-        self.col: int = col;
+        self.col: int = col
 
 class Board():
 
