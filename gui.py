@@ -202,7 +202,9 @@ def main():
             # on click, get the coords of the tile that was clicked
             elif event.type == pg.MOUSEBUTTONDOWN:
                 mouse_pos = pg.mouse.get_pos()
-                col, row = get_clicked_tile(mouse_pos)
+                tile_coords = get_clicked_tile(mouse_pos)
+                if (tile_coords is not None):
+                    col, row = tile_coords
                 
 
         # draw background 
