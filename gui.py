@@ -1,9 +1,10 @@
-# Example file showing a basic pygame "game loop"
+#gui.py
+
 import pygame as pg
 from defs import *
 
 
-SCALE = 3 
+SCALE = 4
 SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
@@ -30,7 +31,36 @@ def draw_to_tile(surface, tile_coords):
 
     screen.blit(surface, pixel_coords)
 
-# Function written by John Rader
+
+# helper that returns tile coords for a given mouse position on click
+def get_clicked_tile(mouse_pos):
+
+    # convert mouse pos to tile coords
+    x, y = mouse_pos
+
+    # scale down to original size
+    x //= SCALE
+    y //= SCALE
+
+    # adjust for the offset of the top left tile
+    x -= 16
+    y -= 56
+
+    # if the click is outside of the board, return None
+    if (x < 0 or y < 0 or x >= 160 or y >=160):
+        return None
+
+    # convert to tile coords
+    x //= 16
+    y //= 16
+
+    # return (col, row) as a tuple
+    col = x
+    row = y
+
+    return (col, row)
+
+
 # load all sprites into memory (sprites dict), then scale
 # TODO: add the rest of the needed sprites
 def init_sprites():
@@ -84,7 +114,81 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
-# Function written by John Rader
+    # load 8x8 cursor arrow
+    abs_pos = (79, 11)
+    offset = (9, 9)
+    size = (8, 8)
+    save_sprites_from_sheet(Sprite.CURSOR, abs_pos, (0,0), offset, size, sprite_sheet)
+
+    # load 8x8 red texts
+    abs_pos = (97, 11)
+    name_locations = [(Sprite.RED_ZERO, (0, 0)),
+                      (Sprite.RED_ONE, (0, 1)),
+                      (Sprite.RED_TWO, (0, 2)),
+                      (Sprite.RED_THREE, (0, 3)),
+                      (Sprite.RED_FOUR, (1, 0)),
+                      (Sprite.RED_FIVE, (1, 1)),
+                      (Sprite.RED_SIX, (1, 2)),
+                      (Sprite.RED_SEVEN, (1, 3)),
+                      (Sprite.RED_EIGHT, (2, 0)),
+                      (Sprite.RED_NINE, (2, 1)),]
+
+    for name, pos in name_locations:
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
+
+    abs_pos = (97, 47)
+    offset = (33, 9)
+    size = (32, 8)
+    # load 32x8 status texts
+    name_locations = [(Sprite.TEXT_LOST, (0, 0)),
+                      (Sprite.TEXT_WON, (1, 0)),
+                      (Sprite.TEXT_PLAYING, (2, 0))]
+
+    for name, pos in name_locations:
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
+
+# draw that 20 to 0 for flags remaining
+def draw_flags_left_numbers(board):
+    flags = board.flags_remaining
+    tens_digit = flags // 10
+    ones_digit = flags % 10
+    # the sprites are 20 to 29, for zero to nine respectively
+    tens_sprite = sprites[tens_digit + 20]
+    ones_sprite = sprites[ones_digit + 20]
+    # tens_sprite = sprites[Sprite.RED_ZERO]
+    # ones_sprite = sprites[Sprite.RED_ZERO]
+    
+    # screen starts at (1,77) on the sprite sheet so subtract that offset
+    locations = [(tens_sprite, [144 - 1, 109 - 77]), (ones_sprite, [152 - 1, 109 - 77])]
+    for surf, tile_coord in locations:
+        # scale
+        tile_coord[0] *= SCALE
+        tile_coord[1] *= SCALE
+
+        screen.blit(surf, tile_coord)
+
+# draw the playing status text
+def draw_status(board):
+    surf = None
+
+    if board.is_game_won:
+        surf = Sprite.TEXT_WON.value
+    elif board.is_game_lost:
+        surf = Sprite.TEXT_LOST.value
+    else:
+        surf = Sprite.TEXT_PLAYING.value
+    
+    surf = sprites[surf]
+
+    # screen starts at (1,77) on the sprite sheet so subtract that offset
+    tile_coord = [32 - 1, 109 - 77]
+
+    tile_coord[0] *= SCALE
+    tile_coord[1] *= SCALE
+
+    screen.blit(surf, tile_coord)
+
+ 
 # draw from given board
 def draw_board(board):
     for r in range(10):
@@ -131,7 +235,7 @@ def draw_board(board):
 # size is the coordinate representing the size of the sprite
 # if pass_value is set, lookup with name, not name.value
 def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet):
-        surf = pg.Surface((16, 16))
+        surf = pg.Surface(size)
 
         # top left sprite starts at (2, 2), have 1 pixel spacing, and are 16x16
         # use this to find top left of each sprite, 16,16 is the size
@@ -173,18 +277,47 @@ def main():
             if event.type == pg.QUIT:
                 running = False
 
+            # on click, get the coords of the tile that was clicked
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if (event.button == 1): # left click
+                    mouse_pos = pg.mouse.get_pos()
+                    tile_coords = get_clicked_tile(mouse_pos)
+                    if (tile_coords is not None):
+                        col, row = tile_coords
+                
+
         # draw background 
         screen.blit(sprites[Sprite.BACKGROUND], (0,0))
 
-        # test
         draw_board(board)
         
+        draw_cursor(board)
+
+        draw_flags_left_numbers(board)
+
+        draw_status(board)
+
         # flip() the display to put your work on screen
         pg.display.flip()
         
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(10)  # limits FPS to 60
 
     pg.quit()
+
+# draw cursor below an unrevealed tile
+def draw_cursor(board):
+    # test drawing cursor
+    mouse_pos = pg.mouse.get_pos()
+    tile_coords = get_clicked_tile(mouse_pos)
+
+    if (tile_coords is None):
+        return
+
+    if (board.tiles[tile_coords[1]][tile_coords[0]].is_revealed):
+        return
+
+    one_below = (tile_coords[0], tile_coords[1] + 1)
+    draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
 
 if __name__ == "__main__":
     main()

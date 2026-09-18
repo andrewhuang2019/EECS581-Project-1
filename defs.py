@@ -19,6 +19,20 @@ class Sprite(Enum):
     VERITY_SURPRISED = 15
     VERITY_DEAD = 16
     BACKGROUND = 17
+    CURSOR = 18
+    RED_ZERO = 20
+    RED_ONE = 21
+    RED_TWO = 22
+    RED_THREE = 23
+    RED_FOUR = 24
+    RED_FIVE = 25
+    RED_SIX = 26
+    RED_SEVEN = 27
+    RED_EIGHT = 28
+    RED_NINE = 29
+    TEXT_WON = 30
+    TEXT_LOST = 31
+    TEXT_PLAYING = 32
 
 class Tile():
 
@@ -35,9 +49,9 @@ class Tile():
         # shouldn't be able to flag a revealed tile
         self.is_flagged: bool = False
         # row of the tile
-        self.row: int = row;
+        self.row: int = row
         # column of the tile
-        self.col: int = col;
+        self.col: int = col
 
 class Board():
 
