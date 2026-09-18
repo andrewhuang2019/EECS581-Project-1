@@ -1,7 +1,9 @@
 #gui.py
 
+from turtle import left
 import pygame as pg
 from defs import *
+from backend import *
 
 
 SCALE = 4
@@ -259,16 +261,8 @@ def main():
     init_sprites()
 
     # test
-    board = Board(10)
-    board.tiles[0][0].is_revealed = True
-    board.tiles[0][1].is_flagged = True
-    board.tiles[0][2].is_mine = True
-    board.tiles[0][2].is_flagged = True
-    board.tiles[0][3].is_mine = True
-    board.tiles[0][3].is_revealed = True
-    for i in range(8):
-        board.tiles[1][i].value = i + 1
-        board.tiles[1][i].is_revealed = True
+    board:Board = Board(10)
+    board.tiles[3][3].is_mine = True
 
     while running:
         # poll for events
@@ -279,11 +273,19 @@ def main():
 
             # on click, get the coords of the tile that was clicked
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if (event.button == 1): # left click
+                LEFT_CLICK = 1
+                RIGHT_CLICK = 3
+                if (event.button == LEFT_CLICK or event.button == RIGHT_CLICK):
                     mouse_pos = pg.mouse.get_pos()
                     tile_coords = get_clicked_tile(mouse_pos)
                     if (tile_coords is not None):
                         col, row = tile_coords
+                        tile = get_tile_at_coords((row, col), board)
+                        
+                        if (event.button == LEFT_CLICK):
+                            left_click_tile(tile, board)
+                        if (event.button == RIGHT_CLICK):
+                            right_click_tile(tile, board)
                 
 
         # draw background 
@@ -300,7 +302,7 @@ def main():
         # flip() the display to put your work on screen
         pg.display.flip()
         
-        clock.tick(10)  # limits FPS to 60
+        clock.tick(60)  # limits FPS to 60
 
     pg.quit()
 

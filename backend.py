@@ -2,6 +2,9 @@
 
 from defs import Tile, Board
 
+def get_tile_at_coords(coords, board: Board):
+    return board.tiles[coords[0]][coords[1]]
+
 # handler function for when the user left clicks a tile
 def left_click_tile(tile: Tile, board: Board):
     # if the tile is flagged, ignore the click
@@ -26,7 +29,7 @@ def left_click_tile(tile: Tile, board: Board):
 
         for nearby_tiles in surrounding_tiles:
             # left click all tiles surrounding the tile
-            left_click(nearby_tiles, board)
+            left_click_tile(nearby_tiles, board)
 
     # check to see if the win conditions are true
     check_win(board)
