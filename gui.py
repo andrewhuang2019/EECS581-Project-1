@@ -134,6 +134,17 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
+    abs_pos = (97, 47)
+    offset = (33, 9)
+    size = (32, 8)
+    # load 32x8 status texts
+    name_locations = [(Sprite.TEXT_LOST, (0, 0)),
+                      (Sprite.TEXT_WON, (1, 0)),
+                      (Sprite.TEXT_PLAYING, (2, 0))]
+
+    for name, pos in name_locations:
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
+
 # draw that 20 to 0 for flags remaining
 def draw_flags_left_numbers(board):
     flags = board.flags_remaining
@@ -145,6 +156,7 @@ def draw_flags_left_numbers(board):
     # tens_sprite = sprites[Sprite.RED_ZERO]
     # ones_sprite = sprites[Sprite.RED_ZERO]
     
+    # screen starts at (1,77) on the sprite sheet so subtract that offset
     locations = [(tens_sprite, [144 - 1, 109 - 77]), (ones_sprite, [152 - 1, 109 - 77])]
     for surf, tile_coord in locations:
         # scale
@@ -152,6 +164,28 @@ def draw_flags_left_numbers(board):
         tile_coord[1] *= SCALE
 
         screen.blit(surf, tile_coord)
+
+# draw the playing status text
+def draw_status(board):
+    surf = None
+
+    if board.is_game_won:
+        surf = Sprite.TEXT_WON.value
+    elif board.is_game_lost:
+        surf = Sprite.TEXT_LOST.value
+    else:
+        surf = Sprite.TEXT_PLAYING.value
+    
+    surf = sprites[surf]
+
+    # screen starts at (1,77) on the sprite sheet so subtract that offset
+    tile_coord = [32 - 1, 109 - 77]
+
+    tile_coord[0] *= SCALE
+    tile_coord[1] *= SCALE
+
+    screen.blit(surf, tile_coord)
+
  
 # draw from given board
 def draw_board(board):
@@ -232,9 +266,8 @@ def main():
     for i in range(8):
         board.tiles[1][i].value = i + 1
         board.tiles[1][i].is_revealed = True
-    i = 0
+
     while running:
-        i += 1
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pg.event.get():
@@ -253,15 +286,13 @@ def main():
         # draw background 
         screen.blit(sprites[Sprite.BACKGROUND], (0,0))
 
-        # test
         draw_board(board)
         
         draw_cursor(board)
 
         draw_flags_left_numbers(board)
 
-        # test
-        board.flags_remaining = i % 21
+        draw_status(board)
 
         # flip() the display to put your work on screen
         pg.display.flip()
