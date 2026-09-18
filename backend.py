@@ -3,6 +3,7 @@
 from defs import Tile, Board
 import random
 
+#handler function for when the user clicks a tile for the first time
 def first_click(tile: Tile, board: Board):
     block_mine = {} #create dictionary to hold tiles that cannot contain mines
     first_click_tiles = get_surrounding_tiles(tile, board) #get first click tile along with adjacent tiles
@@ -10,8 +11,17 @@ def first_click(tile: Tile, board: Board):
     for t in first_click_tiles:
         block_mine[t.row] = t.col #add first click tiles to dictionary 
 
-    make_mines(board, block_mine) # randomly place mines in available board spaces    
+    make_mines(board, block_mine) # randomly place mines in available board spaces
 
+    #iterate through all tiles on the board
+    for row in range(10):
+        for col in range(10):
+            if board.tiles[row][col].is_mine == False: #if tile is not a mine
+                mines_nearby(board.tiles[row][col], board) #set value to number of adjacent mines
+    
+    left_click_tile(tile, board) = True #run left click behavior on the first clicked tile
+
+#randomly places user-specified number of mines on a board (no mines placed on first click or its adjacent tiles)
 def make_mines(board: Board, blocked_mines: dict):
     mine_count = 0 #numbers of mines placed on board so far
     while mine_count < board.mines: #while mine count less than user mine input
@@ -23,6 +33,15 @@ def make_mines(board: Board, blocked_mines: dict):
             board.tiles[rand_row][rand_col].is_mine = True #place mine 
 
             mine_count += 1 #increment mine count
+
+#changes the "value" member variable of a passed Tile object to the number of adjacent mines
+def mines_nearby(tile: Tile, board: Board):
+    tile.value = 0 #set tile value to 0
+    surrounding_tiles = get_surrounding_tiles(tile, board) #get list of the tiles adjacent to current tile
+    
+    for t in surrounding_tiles: #iterate through the surrounding tiles
+        if t.is_mine == True: #if this surrounding tile is a mine
+            tile.value += 1 #increment current tile's value
     
 def get_tile_at_coords(coords, board: Board):
     return board.tiles[coords[0]][coords[1]]
