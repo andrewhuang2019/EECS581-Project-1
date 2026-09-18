@@ -1,7 +1,29 @@
 # BACKEND GOES HERE
 
 from defs import Tile, Board
+import random
 
+def first_click(tile: Tile, board: Board):
+    block_mine = {} #create dictionary to hold tiles that cannot contain mines
+    first_click_tiles = get_surrounding_tiles(tile, board) #get first click tile along with adjacent tiles
+
+    for t in first_click_tiles:
+        block_mine[t.row] = t.col #add first click tiles to dictionary 
+
+    make_mines(board, block_mine) # randomly place mines in available board spaces    
+
+def make_mines(board: Board, blocked_mines: dict):
+    mine_count = 0 #numbers of mines placed on board so far
+    while mine_count < board.mines: #while mine count less than user mine input
+        #generate random integer for row and column 
+        rand_row = random.randint(0,9) 
+        rand_col = random.randint(0,9)
+
+        if rand_row not in blocked_mines or blocked_mines[rand_row] != rand_col: #if random tile is not in blocked mines dictionary
+            board.tiles[rand_row][rand_col].is_mine = True #place mine 
+
+            mine_count += 1 #increment mine count
+    
 def get_tile_at_coords(coords, board: Board):
     return board.tiles[coords[0]][coords[1]]
 
