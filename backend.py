@@ -19,7 +19,7 @@ def first_click(tile: Tile, board: Board):
             if board.tiles[row][col].is_mine == False: #if tile is not a mine
                 mines_nearby(board.tiles[row][col], board) #set value to number of adjacent mines
     
-    left_click_tile(tile, board) = True #run left click behavior on the first clicked tile
+    left_click_tile(tile, board) #run left click behavior on the first clicked tile
 
 #randomly places user-specified number of mines on a board (no mines placed on first click or its adjacent tiles)
 def make_mines(board: Board, blocked_mines: dict):
