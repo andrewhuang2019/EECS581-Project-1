@@ -4,7 +4,7 @@ import pygame as pg
 from defs import *
 
 
-SCALE = 3 
+SCALE = 4
 SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
@@ -118,6 +118,41 @@ def init_sprites():
     size = (8, 8)
     save_sprites_from_sheet(Sprite.CURSOR, abs_pos, (0,0), offset, size, sprite_sheet)
 
+    # load 8x8 red texts
+    abs_pos = (97, 11)
+    name_locations = [(Sprite.RED_ZERO, (0, 0)),
+                      (Sprite.RED_ONE, (0, 1)),
+                      (Sprite.RED_TWO, (0, 2)),
+                      (Sprite.RED_THREE, (0, 3)),
+                      (Sprite.RED_FOUR, (1, 0)),
+                      (Sprite.RED_FIVE, (1, 1)),
+                      (Sprite.RED_SIX, (1, 2)),
+                      (Sprite.RED_SEVEN, (1, 3)),
+                      (Sprite.RED_EIGHT, (2, 0)),
+                      (Sprite.RED_NINE, (2, 1)),]
+
+    for name, pos in name_locations:
+        save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
+
+# draw that 20 to 0 for flags remaining
+def draw_flags_left_numbers(board):
+    flags = board.flags_remaining
+    tens_digit = flags // 10
+    ones_digit = flags % 10
+    # the sprites are 20 to 29, for zero to nine respectively
+    tens_sprite = sprites[tens_digit + 20]
+    ones_sprite = sprites[ones_digit + 20]
+    # tens_sprite = sprites[Sprite.RED_ZERO]
+    # ones_sprite = sprites[Sprite.RED_ZERO]
+    
+    locations = [(tens_sprite, [144 - 1, 109 - 77]), (ones_sprite, [152 - 1, 109 - 77])]
+    for surf, tile_coord in locations:
+        # scale
+        tile_coord[0] *= SCALE
+        tile_coord[1] *= SCALE
+
+        screen.blit(surf, tile_coord)
+ 
 # draw from given board
 def draw_board(board):
     for r in range(10):
@@ -197,8 +232,9 @@ def main():
     for i in range(8):
         board.tiles[1][i].value = i + 1
         board.tiles[1][i].is_revealed = True
-
+    i = 0
     while running:
+        i += 1
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pg.event.get():
@@ -222,10 +258,15 @@ def main():
         
         draw_cursor(board)
 
+        draw_flags_left_numbers(board)
+
+        # test
+        board.flags_remaining = i % 21
+
         # flip() the display to put your work on screen
         pg.display.flip()
         
-        clock.tick(60)  # limits FPS to 60
+        clock.tick(10)  # limits FPS to 60
 
     pg.quit()
 

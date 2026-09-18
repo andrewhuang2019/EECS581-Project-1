@@ -20,6 +20,16 @@ class Sprite(Enum):
     VERITY_DEAD = 16
     BACKGROUND = 17
     CURSOR = 18
+    RED_ZERO = 20
+    RED_ONE = 21
+    RED_TWO = 22
+    RED_THREE = 23
+    RED_FOUR = 24
+    RED_FIVE = 25
+    RED_SIX = 26
+    RED_SEVEN = 27
+    RED_EIGHT = 28
+    RED_NINE = 29
 
 class Tile():
 
