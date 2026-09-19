@@ -5,11 +5,8 @@ import random
 
 #handler function for when the user clicks a tile for the first time
 def first_click(tile: Tile, board: Board):
-    block_mine = {} #create dictionary to hold tiles that cannot contain mines
     first_click_tiles = get_surrounding_tiles(tile, board) #get first click tile along with adjacent tiles
-
-    for t in first_click_tiles:
-        block_mine[t.row] = t.col #add first click tiles to dictionary 
+    block_mine = {(t.row, t.col) for t in first_click_tiles} #create set of tuples to hold tiles that cannot contain mines
 
     make_mines(board, block_mine) # randomly place mines in available board spaces
 
@@ -22,14 +19,15 @@ def first_click(tile: Tile, board: Board):
     left_click_tile(tile, board) #run left click behavior on the first clicked tile
 
 #randomly places user-specified number of mines on a board (no mines placed on first click or its adjacent tiles)
-def make_mines(board: Board, blocked_mines: dict):
+def make_mines(board: Board, blocked_mines: set):
     mine_count = 0 #numbers of mines placed on board so far
     while mine_count < board.mines: #while mine count less than user mine input
         #generate random integer for row and column 
         rand_row = random.randint(0,9) 
         rand_col = random.randint(0,9)
 
-        if rand_row not in blocked_mines or blocked_mines[rand_row] != rand_col: #if random tile is not in blocked mines dictionary
+        #if random tile is not in blocked mines dictionary and has not already been made a mine
+        if ((rand_row, rand_col) not in blocked_mines) and (not board.tiles[rand_row][rand_col].is_mine):
             board.tiles[rand_row][rand_col].is_mine = True #place mine 
 
             mine_count += 1 #increment mine count
@@ -90,9 +88,9 @@ def get_surrounding_tiles(tile: Tile, board: Board):
         for col in range(-1, 2):
             offset_row = tile.row + row
             offset_col = tile.col + col 
-            if offset_row < 0 or offset_row > 10:
+            if offset_row < 0 or offset_row >= 10:
                 continue
-            if offset_col < 0 or offset_col > 10:
+            if offset_col < 0 or offset_col >= 10:
                 continue
             # add the surrounding tile if the iteration was not skipped
             surrounding_tiles.append(board.tiles[offset_row][offset_col])
