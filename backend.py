@@ -26,7 +26,7 @@ def make_mines(board: Board, blocked_mines: set):
         rand_row = random.randint(0,9) 
         rand_col = random.randint(0,9)
 
-        #if random tile is not in blocked mines dictionary and has not already been made a mine
+        #if random tile is not in blocked mines set and has not already been made a mine
         if ((rand_row, rand_col) not in blocked_mines) and (not board.tiles[rand_row][rand_col].is_mine):
             board.tiles[rand_row][rand_col].is_mine = True #place mine 
 
