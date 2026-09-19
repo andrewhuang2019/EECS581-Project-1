@@ -10,8 +10,31 @@ SCALE = 4
 SCREEN_WIDTH = 192 # ten 16px tiles + four 8px tiles = 192
 SCREEN_HEIGHT = 232 # ten 16px tiles + nine 8px tiles = 232
 
+# top-left position to draw the start screen panel in center of screen
+PANEL_X = (SCREEN_WIDTH - 176) // 2
+PANEL_Y = (SCREEN_HEIGHT - 216) // 2
+
+# labeling postitions and sizes for each respective start screen interactive asset
+NUMBER_GAP_POS = (93, 83)
+NUMBER_GAP_SIZE = (16, 8)
+
+UP_ARROW_POS = (111, 83)
+UP_ARROW_SIZE = (8, 8)
+
+DOWN_ARROW_POS = (120, 83)
+DOWN_ARROW_SIZE = (8, 8)
+
+START_BUTTON_POS = (44, 136)
+START_BUTTON_SIZE = (88, 24)
+
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
+
+# which screen is currently active between menu or playing
+game_state = "menu"
+
+# mine count chosen on the start menu (=<20, >=10)
+selected_mines = 20
 
 # Function written by John Rader
 # return a pg surface scaled by SCALE
@@ -82,6 +105,17 @@ def init_sprites():
     bg_surf = scale_surface(bg_surf)
 
     sprites[Sprite.BACKGROUND] = bg_surf
+
+    # load start screen panel
+    start_screen_sheet = pg.image.load("./assets/start_screen.png")
+
+    panel_surf = pg.Surface((176,216))
+    panel_sheet_location = (9, 85, 176, 216)
+    panel_surf.blit(start_screen_sheet, dest, area=panel_sheet_location)
+
+    panel_surf = scale_surface(panel_surf)
+
+    sprites[Sprite.START_PANEL.value] = panel_surf
 
     # load 16x16 sprites
     # track sprite type and position on sprite sheet
@@ -190,7 +224,30 @@ def draw_status(board):
 
     screen.blit(surf, tile_coord)
 
- 
+# Function written by Evan Noeth
+# draw the start menu (the panel graphic plus the live mine count)
+def draw_start_menu():
+    panel_surf = sprites[Sprite.START_PANEL.value]
+    screen.blit(panel_surf, (PANEL_X * SCALE, PANEL_Y * SCALE))
+
+    draw_mine_count()
+
+# Function written by Evan Noeth
+# draw the two-digit mine count into the number gap on the start menu panel
+def draw_mine_count():
+    tens_digit = selected_mines // 10
+    ones_digit = selected_mines % 10
+    # the sprites are 20 to 29, for zero to nine
+    tens_sprite = sprites[tens_digit + 20]
+    ones_sprite = sprites[ones_digit + 20]
+
+    # NUMBER_GAP_POS is local to panels top left corner, each digit is 8px wide unscaled
+    tens_pos = ((PANEL_X + NUMBER_GAP_POS[0]) * SCALE, (PANEL_Y + NUMBER_GAP_POS[1]) * SCALE)
+    ones_pos = ((PANEL_X + NUMBER_GAP_POS[0] + 8) * SCALE, (PANEL_Y + NUMBER_GAP_POS[1]) * SCALE)
+
+    screen.blit(tens_sprite, tens_pos)
+    screen.blit(ones_sprite, ones_pos)
+
 # draw from given board
 def draw_board(board):
     for r in range(10):
@@ -255,14 +312,16 @@ def main():
     # pygame setup
     pg.init()
 
+    # updates the non local vars instead of making new local ones
+    global game_state, selected_mines
+
     clock = pg.time.Clock()
     running = True
 
     init_sprites()
 
-    # test
-    board:Board = Board(10)
-    board.tiles[3][3].is_mine = True
+    # board doesnt exist until the player presses start on the menu
+    board = None
 
     while running:
         # poll for events
@@ -271,37 +330,63 @@ def main():
             if event.type == pg.QUIT:
                 running = False
 
-            # on click, get the coords of the tile that was clicked
+            # on click, handle it differently depending on which screen is active
             elif event.type == pg.MOUSEBUTTONDOWN:
-                LEFT_CLICK = 1
-                RIGHT_CLICK = 3
-                if (event.button == LEFT_CLICK or event.button == RIGHT_CLICK):
+                # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
+                # then everything scaled by SCALE like draw_to_tile
+                if game_state == "menu":
                     mouse_pos = pg.mouse.get_pos()
-                    tile_coords = get_clicked_tile(mouse_pos)
-                    if (tile_coords is not None):
-                        col, row = tile_coords
-                        tile = get_tile_at_coords((row, col), board)
-                        
-                        if (event.button == LEFT_CLICK):
-                            left_click_tile(tile, board)
-                        if (event.button == RIGHT_CLICK):
-                            right_click_tile(tile, board)
-                
 
-        # draw background 
-        screen.blit(sprites[Sprite.BACKGROUND], (0,0))
+                    up_arrow_rect = pg.Rect((PANEL_X + UP_ARROW_POS[0]) * SCALE, (PANEL_Y + UP_ARROW_POS[1]) * SCALE,
+                                             UP_ARROW_SIZE[0] * SCALE, UP_ARROW_SIZE[1] * SCALE)
+                    down_arrow_rect = pg.Rect((PANEL_X + DOWN_ARROW_POS[0]) * SCALE, (PANEL_Y + DOWN_ARROW_POS[1]) * SCALE,
+                                               DOWN_ARROW_SIZE[0] * SCALE, DOWN_ARROW_SIZE[1] * SCALE)
+                    start_button_rect = pg.Rect((PANEL_X + START_BUTTON_POS[0]) * SCALE, (PANEL_Y + START_BUTTON_POS[1]) * SCALE,
+                                                 START_BUTTON_SIZE[0] * SCALE, START_BUTTON_SIZE[1] * SCALE)
 
-        draw_board(board)
-        
-        draw_cursor(board)
+                    if up_arrow_rect.collidepoint(mouse_pos):
+                        selected_mines = min(20, selected_mines + 1)
+                    elif down_arrow_rect.collidepoint(mouse_pos):
+                        selected_mines = max(10, selected_mines - 1)
+                    elif start_button_rect.collidepoint(mouse_pos):
+                        board = Board(selected_mines)
+                        # test with user amount of bombs
+                        make_mines(board, {})
+                        game_state = "playing"
+                # on click, get the cords of the tile that was clicked
+                elif game_state == "playing":
+                    LEFT_CLICK = 1
+                    RIGHT_CLICK = 3
+                    if (event.button == LEFT_CLICK or event.button == RIGHT_CLICK):
+                        mouse_pos = pg.mouse.get_pos()
+                        tile_coords = get_clicked_tile(mouse_pos)
+                        if (tile_coords is not None):
+                            col, row = tile_coords
+                            tile = get_tile_at_coords((row, col), board)
 
-        draw_flags_left_numbers(board)
+                            if (event.button == LEFT_CLICK):
+                                left_click_tile(tile, board)
+                            if (event.button == RIGHT_CLICK):
+                                right_click_tile(tile, board)
 
-        draw_status(board)
+        # draw whichever screen is currently active
+        if game_state == "menu":
+            draw_start_menu()
+        elif game_state == "playing":
+            # draw background
+            screen.blit(sprites[Sprite.BACKGROUND], (0,0))
+
+            draw_board(board)
+
+            draw_cursor(board)
+
+            draw_flags_left_numbers(board)
+
+            draw_status(board)
 
         # flip() the display to put your work on screen
         pg.display.flip()
-        
+
         clock.tick(60)  # limits FPS to 60
 
     pg.quit()

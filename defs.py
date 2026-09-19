@@ -33,6 +33,7 @@ class Sprite(Enum):
     TEXT_WON = 30
     TEXT_LOST = 31
     TEXT_PLAYING = 32
+    START_PANEL = 33
 
 class Tile():
 
