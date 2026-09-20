@@ -44,6 +44,14 @@ def mines_nearby(tile: Tile, board: Board):
 def get_tile_at_coords(coords, board: Board):
     return board.tiles[coords[0]][coords[1]]
 
+# Function written by Sina Asheghalishahi
+# reveals all mines on the board (used when the user clicks on a mine)
+def reveal_all_mines(board: Board):
+    for row in range(10):
+        for col in range(10):
+            if board.tiles[row][col].is_mine:
+                board.tiles[row][col].is_revealed = True
+
 # handler function for when the user left clicks a tile
 def left_click_tile(tile: Tile, board: Board):
     # if the tile is flagged, ignore the click
@@ -60,6 +68,8 @@ def left_click_tile(tile: Tile, board: Board):
     # if the tile is a mine, set the game lost parameter to true
     if (tile.is_mine):
         board.is_game_lost = True
+        board.clicked_mine = tile
+        reveal_all_mines(board)
         return
 
     # if the tile has no surrounding mines, recursively click the surrounding tiles
@@ -92,6 +102,8 @@ def get_surrounding_tiles(tile: Tile, board: Board):
                 continue
             if offset_col < 0 or offset_col >= 10:
                 continue
+            if(row == 0 and col == 0):
+                continue
             # add the surrounding tile if the iteration was not skipped
             surrounding_tiles.append(board.tiles[offset_row][offset_col])
 
@@ -99,8 +111,11 @@ def get_surrounding_tiles(tile: Tile, board: Board):
 
 def right_click_tile(tile: Tile, board: Board):
     if not tile.is_revealed:
+        if board.flags_remaining == 0 and not tile.is_flagged:
+            return
         tile.is_flagged = not tile.is_flagged
         if tile.is_flagged:
             board.flags_remaining -= 1
         else:
             board.flags_remaining += 1
+

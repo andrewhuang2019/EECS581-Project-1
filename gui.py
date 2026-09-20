@@ -56,7 +56,7 @@ def draw_to_tile(surface, tile_coords):
 
     screen.blit(surface, pixel_coords)
 
-
+# Function written by Sina Asheghalishahi
 # helper that returns tile coords for a given mouse position on click
 def get_clicked_tile(mouse_pos):
 
@@ -265,12 +265,15 @@ def draw_board(board):
                 sprite_to_draw = Sprite.UNREVEALED
             # if it is revealed, then check the value to see if it is [0, 8]
             else:
-                if (tile.value >= 0 and tile.value <= 8):
+                # if it is revealed and also a mine, draw the revealed mine tile
+                if (tile.is_mine):
+                    if(tile is board.clicked_mine):
+                        sprite_to_draw = Sprite.CLICKED_MINE
+                    else:
+                        sprite_to_draw = Sprite.MINE
+                elif (tile.value >= 0 and tile.value <= 8):
                     sprite_to_draw = tile.value
                     pass_value = True
-                # if it is revealed and also a mine, draw the revealed mine tile
-                elif (tile.is_mine):
-                    sprite_to_draw = Sprite.CLICKED_MINE
                 else:
                     sprite_to_draw = Sprite.REVEALED
 
@@ -306,6 +309,35 @@ def save_sprites_from_sheet(name, absolute_position, relative_position, spacing,
 
         sprites[name.value] = surf
 
+# draw cursor below an unrevealed tile
+def draw_cursor(board):
+    # test drawing cursor
+    mouse_pos = pg.mouse.get_pos()
+    tile_coords = get_clicked_tile(mouse_pos)
+
+    if (tile_coords is None):
+        return
+
+    if (board.tiles[tile_coords[1]][tile_coords[0]].is_revealed):
+        return
+
+    one_below = (tile_coords[0], tile_coords[1] + 1)
+    draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
+
+FACE_POS = (88, 24)
+# Function written by Sina Asheghalishahi
+# draw the face on the start panel based on the game state
+def draw_face(board):
+    if(board.is_game_won):
+        face = Sprite.VERITY_SUNGLASSES
+    elif(board.is_game_lost):
+        face = Sprite.VERITY_DEAD
+    else:
+        face = Sprite.VERITY_SMILE
+
+    screen.blit(sprites[face.value], (FACE_POS[0] * SCALE, FACE_POS[1] * SCALE))
+
+
 # Function outline sourced from pygame tutorial
 # core drawing loop
 def main():
@@ -332,6 +364,9 @@ def main():
 
             # on click, handle it differently depending on which screen is active
             elif event.type == pg.MOUSEBUTTONDOWN:
+                if(board is not None and (board.is_game_won or board.is_game_lost)):
+                    continue
+
                 # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
                 # then everything scaled by SCALE like draw_to_tile
                 if game_state == "menu":
@@ -351,7 +386,8 @@ def main():
                     elif start_button_rect.collidepoint(mouse_pos):
                         board = Board(selected_mines)
                         # test with user amount of bombs
-                        make_mines(board, {})
+
+                        #make_mines(board, {})
                         game_state = "playing"
                 # on click, get the cords of the tile that was clicked
                 elif game_state == "playing":
@@ -365,7 +401,11 @@ def main():
                             tile = get_tile_at_coords((row, col), board)
 
                             if (event.button == LEFT_CLICK):
-                                left_click_tile(tile, board)
+                                if(not board.first_click):
+                                    first_click(tile, board)
+                                    board.first_click = True
+                                else:
+                                    left_click_tile(tile, board)
                             if (event.button == RIGHT_CLICK):
                                 right_click_tile(tile, board)
 
@@ -384,6 +424,8 @@ def main():
 
             draw_status(board)
 
+            draw_face(board)
+
         # flip() the display to put your work on screen
         pg.display.flip()
 
@@ -391,20 +433,6 @@ def main():
 
     pg.quit()
 
-# draw cursor below an unrevealed tile
-def draw_cursor(board):
-    # test drawing cursor
-    mouse_pos = pg.mouse.get_pos()
-    tile_coords = get_clicked_tile(mouse_pos)
-
-    if (tile_coords is None):
-        return
-
-    if (board.tiles[tile_coords[1]][tile_coords[0]].is_revealed):
-        return
-
-    one_below = (tile_coords[0], tile_coords[1] + 1)
-    draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
 
 if __name__ == "__main__":
     main()

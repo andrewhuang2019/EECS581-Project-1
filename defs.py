@@ -66,9 +66,11 @@ class Board():
                 row.append(Tile(r,c))
             self.tiles.append(row)
 
+        self.first_click = False
         self.is_game_won = False
         self.is_game_lost = False
         self.flags_total = -1
         self.flags_remaining = mines 
-        self.num_revealed = 0;
+        self.num_revealed = 0
         self.mines = mines
+        self.clicked_mine = None
