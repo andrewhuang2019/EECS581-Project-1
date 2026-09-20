@@ -3,6 +3,8 @@
 from defs import Tile, Board
 import random
 
+#authored by: Emily Farley, Peter Barybin
+#date created: 9/18/26
 #handler function for when the user clicks a tile for the first time
 def first_click(tile: Tile, board: Board):
     first_click_tiles = get_surrounding_tiles(tile, board) #get first click tile along with adjacent tiles
@@ -19,6 +21,8 @@ def first_click(tile: Tile, board: Board):
     
     left_click_tile(tile, board) #run left click behavior on the first clicked tile
 
+#authored by: Emily Farley
+#date created: 9/18/26
 #randomly places user-specified number of mines on a board (no mines placed on first click or its adjacent tiles)
 def make_mines(board: Board, blocked_mines: set):
     mine_count = 0 #numbers of mines placed on board so far
@@ -33,6 +37,8 @@ def make_mines(board: Board, blocked_mines: set):
 
             mine_count += 1 #increment mine count
 
+#authored by: Peter Barybin
+#date created: 9/18/26
 #changes the "value" member variable of a passed Tile object to the number of adjacent mines
 def mines_nearby(tile: Tile, board: Board):
     tile.value = 0 #set tile value to 0
