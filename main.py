@@ -86,7 +86,6 @@ def get_clicked_tile(mouse_pos):
 
 # Function written by John Rader
 # load all sprites into memory (sprites dict), then scale
-# TODO: add the rest of the needed sprites
 def init_sprites():
     # all images drawn to sprites are done so at (0,0), so they fill the entire surface
     dest = (0,0)

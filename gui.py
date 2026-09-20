@@ -1,6 +1,5 @@
 #gui.py
 
-from turtle import left
 import pygame as pg
 from defs import *
 from backend import *
@@ -46,6 +45,11 @@ MENU_BUTTON_RECT = pg.Rect(
     MENU_BUTTON_NATIVE_SIZE[0] * SCALE,
     MENU_BUTTON_NATIVE_SIZE[1] * SCALE
 )
+
+GAME_OVER_BLINK_MS = 500
+
+FACE_POS = (88, 24)
+
 
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
@@ -107,7 +111,6 @@ def get_clicked_tile(mouse_pos):
 
 
 # load all sprites into memory (sprites dict), then scale
-# TODO: add the rest of the needed sprites
 def init_sprites():
     # all images drawn to sprites are done so at (0,0), so they fill the entire surface
     dest = (0,0)
@@ -358,7 +361,7 @@ def draw_cursor(board):
     one_below = (tile_coords[0], tile_coords[1] + 1)
     draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
 
-FACE_POS = (88, 24)
+
 # Function written by Sina Asheghalishahi
 # draw the face on the start panel based on the game state
 def draw_face(board):
@@ -404,10 +407,10 @@ def main():
 
             # on click, handle it differently depending on which screen is active
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if(board is not None and (board.is_game_won or board.is_game_lost) and game_state != "menu"):
+                if(game_state == "game_over"):
                     mouse_pos = pg.mouse.get_pos()
 
-                    if(MENU_BUTTON_RECT.collidepoint(mouse_pos)):
+                    if(event.button == 1 and MENU_BUTTON_RECT.collidepoint(mouse_pos)):
                         game_state = "menu"
 
                 # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
@@ -430,7 +433,6 @@ def main():
                         board = Board(selected_mines)
                         # test with user amount of bombs
 
-                        #make_mines(board, {})
                         game_state = "playing"
                 # on click, get the cords of the tile that was clicked
                 elif game_state == "playing":
@@ -452,6 +454,10 @@ def main():
                             if (event.button == RIGHT_CLICK):
                                 right_click_tile(tile, board)
 
+                    if(board.is_game_lost or board.is_game_won):
+                        game_state = "game_over"
+                        game_over_start_time = pg.time.get_ticks()
+
         # draw whichever screen is currently active
         if game_state == "menu":
             draw_start_menu()
@@ -469,7 +475,24 @@ def main():
 
             draw_face(board)
 
-            draw_game_over(board)
+        elif game_state == "game_over":
+
+            # draw background
+            screen.blit(sprites[Sprite.BACKGROUND], (0,0))
+
+            draw_board(board)
+
+            draw_flags_left_numbers(board)
+
+            draw_status(board)
+
+            draw_face(board)
+
+            elapsed_time = pg.time.get_ticks() - game_over_start_time
+            
+            if((elapsed_time // GAME_OVER_BLINK_MS) % 2 == 0):
+                draw_game_over(board)
+
 
         # flip() the display to put your work on screen
         pg.display.flip()
