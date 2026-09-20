@@ -119,6 +119,8 @@ def get_surrounding_tiles(tile: Tile, board: Board):
 # flag an unflagged tile if there are flags left
 # unflag a flagged tile
 # update values accordingly
+# authored by: Cooper Wright, John Rader
+# date created: 9/18/26
 def right_click_tile(tile: Tile, board: Board):
 
     # ignore revealed tiles
