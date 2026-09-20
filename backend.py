@@ -5,7 +5,7 @@ import random
 
 #handler function for when the user clicks a tile for the first time
 def first_click(tile: Tile, board: Board):
-    first_click_tiles = get_surrounding_tiles(tile, board) #get first click tile along with adjacent tiles
+    first_click_tiles = get_surrounding_tiles(tile, board).append(tile) #get first click tile along with adjacent tiles
     block_mine = {(t.row, t.col) for t in first_click_tiles} #create set of tuples to hold tiles that cannot contain mines
 
     make_mines(board, block_mine) # randomly place mines in available board spaces
