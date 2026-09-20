@@ -37,6 +37,16 @@ GAME_OVER_RECT = pg.Rect(
     GAME_OVER_SIZE[1] * SCALE
 )
 
+MENU_BUTTON_RELATIVE_POS = (14, 30)
+MENU_BUTTON_NATIVE_SIZE = (68, 18)
+
+MENU_BUTTON_RECT = pg.Rect(
+    GAME_OVER_RECT[0] + MENU_BUTTON_RELATIVE_POS[0] * SCALE,
+    GAME_OVER_RECT[1] + MENU_BUTTON_RELATIVE_POS[1] * SCALE,
+    MENU_BUTTON_NATIVE_SIZE[0] * SCALE,
+    MENU_BUTTON_NATIVE_SIZE[1] * SCALE
+)
+
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
 
@@ -397,10 +407,8 @@ def main():
                 if(board is not None and (board.is_game_won or board.is_game_lost)):
                     mouse_pos = pg.mouse.get_pos()
 
-                    menu_button_rect = pg.Rect()
-                    
-
-
+                    if(MENU_BUTTON_RECT.collidepoint(mouse_pos)):
+                        game_state = "menu"
 
                 # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
                 # then everything scaled by SCALE like draw_to_tile
