@@ -32,7 +32,7 @@ GAME_OVER_SIZE = (97, 62)
 
 GAME_OVER_RECT = pg.Rect(
     ((SCREEN_WIDTH - GAME_OVER_SIZE[0]) // 2) * SCALE,
-    ((SCREEN_HEIGHT - GAME_OVER_SIZE[1]) // 2) * SCALE,
+    (((SCREEN_HEIGHT - GAME_OVER_SIZE[1]) // 2) + 20) * SCALE,
     GAME_OVER_SIZE[0] * SCALE,
     GAME_OVER_SIZE[1] * SCALE
 )
@@ -404,7 +404,7 @@ def main():
 
             # on click, handle it differently depending on which screen is active
             elif event.type == pg.MOUSEBUTTONDOWN:
-                if(board is not None and (board.is_game_won or board.is_game_lost)):
+                if(board is not None and (board.is_game_won or board.is_game_lost) and game_state != "menu"):
                     mouse_pos = pg.mouse.get_pos()
 
                     if(MENU_BUTTON_RECT.collidepoint(mouse_pos)):
@@ -412,7 +412,7 @@ def main():
 
                 # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
                 # then everything scaled by SCALE like draw_to_tile
-                if game_state == "menu":
+                elif game_state == "menu":
                     mouse_pos = pg.mouse.get_pos()
 
                     up_arrow_rect = pg.Rect((PANEL_X + UP_ARROW_POS[0]) * SCALE, (PANEL_Y + UP_ARROW_POS[1]) * SCALE,
