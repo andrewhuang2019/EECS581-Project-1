@@ -54,6 +54,10 @@ def reveal_all_mines(board: Board):
 
 # handler function for when the user left clicks a tile
 def left_click_tile(tile: Tile, board: Board):
+
+    if board.is_game_lost or board.is_game_won:
+        return
+
     # if the tile is flagged, ignore the click
     # if the tile is already revealed, ignore the click
     if (tile.is_flagged or tile.is_revealed):
@@ -109,13 +113,26 @@ def get_surrounding_tiles(tile: Tile, board: Board):
 
     return surrounding_tiles
 
+# ignore clicks if game is lost
+# ignore tile if revealed
+# flag an unflagged tile if there are flags left
+# unflag a flagged tile
+# update values accordingly
 def right_click_tile(tile: Tile, board: Board):
-    if not tile.is_revealed:
-        if board.flags_remaining == 0 and not tile.is_flagged:
-            return
-        tile.is_flagged = not tile.is_flagged
-        if tile.is_flagged:
-            board.flags_remaining -= 1
-        else:
-            board.flags_remaining += 1
+
+    # ignore revealed tiles
+    if tile.is_revealed or board.is_game_lost or board.is_game_won:
+        return
+
+    # try to flag
+    if not tile.is_flagged and board.flags_remaining > 0:
+        board.flags_remaining -= 1
+        tile.is_flagged = True
+        return
+    
+    # unflag
+    if tile.is_flagged:
+        board.flags_remaining += 1
+        tile.is_flagged = False
+        return
 
