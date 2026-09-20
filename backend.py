@@ -60,6 +60,8 @@ def reveal_all_mines(board: Board):
                 board.tiles[row][col].is_revealed = True
 
 # handler function for when the user left clicks a tile
+# authored by: Andrew Huang
+# date created: 9/18/26
 def left_click_tile(tile: Tile, board: Board):
 
     if board.is_game_lost or board.is_game_won:
@@ -94,12 +96,16 @@ def left_click_tile(tile: Tile, board: Board):
     # check to see if the win conditions are true
     check_win(board)
 
-# function to check if all non-mine tiles have been revealed
+# checks if all non-mine tiles have been revealed
+# authored by: Andrew Huang
+# date created: 9/18/26
 def check_win(board: Board):
     if (board.num_revealed == (100 - board.mines)):
         board.is_game_won = True
 
 # obtains the valid tiles surrounding the input tile on the board
+# authored by: Andrew Huang
+# date created: 9/18/26
 def get_surrounding_tiles(tile: Tile, board: Board):
     surrounding_tiles = []
 
