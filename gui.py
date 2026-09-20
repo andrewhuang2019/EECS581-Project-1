@@ -27,6 +27,16 @@ DOWN_ARROW_SIZE = (8, 8)
 START_BUTTON_POS = (44, 136)
 START_BUTTON_SIZE = (88, 24)
 
+GAME_OVER_SOURCE_RECT = pg.Rect(250, 814, 498, 320)
+GAME_OVER_SIZE = (97, 62)
+
+GAME_OVER_RECT = pg.Rect(
+    ((SCREEN_WIDTH - GAME_OVER_SIZE[0]) // 2) * SCALE,
+    ((SCREEN_HEIGHT - GAME_OVER_SIZE[1]) // 2) * SCALE,
+    GAME_OVER_SIZE[0] * SCALE,
+    GAME_OVER_SIZE[1] * SCALE
+)
+
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
 
@@ -183,6 +193,11 @@ def init_sprites():
     for name, pos in name_locations:
         save_sprites_from_sheet(name, abs_pos, pos, offset, size, sprite_sheet)
 
+    # load game over panel
+    game_over_sheet = pg.image.load("./assets/game_over_sheet.png").convert_alpha()
+
+    save_sprites_from_sheet(Sprite.GAME_OVER, GAME_OVER_SOURCE_RECT.topleft, (0, 0), (0, 0), GAME_OVER_SOURCE_RECT.size, game_over_sheet, native_size=GAME_OVER_SIZE)
+
 # draw that 20 to 0 for flags remaining
 def draw_flags_left_numbers(board):
     flags = board.flags_remaining
@@ -296,7 +311,7 @@ def draw_board(board):
 # spacing is the coordinate representing the horizontal and vertical distance between sprites
 # size is the coordinate representing the size of the sprite
 # if pass_value is set, lookup with name, not name.value
-def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet):
+def save_sprites_from_sheet(name, absolute_position, relative_position, spacing, size, sprite_sheet, native_size=None):
         surf = pg.Surface(size)
 
         # top left sprite starts at (2, 2), have 1 pixel spacing, and are 16x16
@@ -304,13 +319,22 @@ def save_sprites_from_sheet(name, absolute_position, relative_position, spacing,
         sprite_sheet_location = (absolute_position[0] + relative_position[1] * spacing[0],
                                  absolute_position[1] + relative_position[0] * spacing[1],
                                  size[0], size[1])
+
         surf.blit(sprite_sheet, (0,0), area=sprite_sheet_location)
+
+        if(native_size is not None):
+            surf = pg.transform.scale(surf, native_size)
+        
         surf = scale_surface(surf)
 
         sprites[name.value] = surf
 
 # draw cursor below an unrevealed tile
 def draw_cursor(board):
+    # only draw cursor if game is not done
+    if (board.is_game_won or board.is_game_lost):
+        return
+    
     # test drawing cursor
     mouse_pos = pg.mouse.get_pos()
     tile_coords = get_clicked_tile(mouse_pos)
@@ -337,6 +361,12 @@ def draw_face(board):
 
     screen.blit(sprites[face.value], (FACE_POS[0] * SCALE, FACE_POS[1] * SCALE))
 
+
+# Function written by Sina Asheghalishahi
+# draw game over logic
+def draw_game_over(board):
+    if(board.is_game_won or board.is_game_lost):
+        screen.blit(sprites[Sprite.GAME_OVER.value], GAME_OVER_RECT.topleft)
 
 # Function outline sourced from pygame tutorial
 # core drawing loop
@@ -365,7 +395,12 @@ def main():
             # on click, handle it differently depending on which screen is active
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if(board is not None and (board.is_game_won or board.is_game_lost)):
-                    continue
+                    mouse_pos = pg.mouse.get_pos()
+
+                    menu_button_rect = pg.Rect()
+                    
+
+
 
                 # on click, up/down arrow/start button positions are measured relative to the panel (the graphics own top left corner in unscaled asset, not screen)
                 # then everything scaled by SCALE like draw_to_tile
@@ -425,6 +460,8 @@ def main():
             draw_status(board)
 
             draw_face(board)
+
+            draw_game_over(board)
 
         # flip() the display to put your work on screen
         pg.display.flip()
