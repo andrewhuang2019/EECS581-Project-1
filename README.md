@@ -7,6 +7,7 @@ Provides a high-level structural overview of the project architecture to assist 
 1. Board - 10x10 2d array of Tiles. Handles mines, game state (won/lost), flags total/remaining
 2. Tile - hold value (number on tile), revealed boolean, is_mine boolean, is_flagged boolean, row and col of tile on Board
 3. Sprite - enum that holds sprite number to name values
+4. sprites - dict that maps Sprite enums to their representative Pygame sprite image surfaces.
 ### Data Flow
 1. User selects mine count using arrow buttons --> number sent to board object
 2. User tile click --> corresponding click handler (first, left, right) function runs
