@@ -1,5 +1,29 @@
 # EECS581-Project-1
 
+## Person Hours: Estimate vs. Actual
+How it is measured: estimate how long a task would take in person hours based on estimated workload and then whoever had said task would record how many actual hours the task took.
+John Rader: 
+- Estimation: 10 hours 
+- Actual: 12 hours
+Peter Barybin: 
+- Estimation: 7 hours 
+- Actual: 8 hours
+Cooper Wright:
+- Estimation: 4 hours
+- Actual: 3 hours
+Andrew Huang:
+- Estimation: 4 hours
+- Actual: 5 hours
+Emily Farley:
+- Estimation: 7 hours
+- Actual: 8 hours
+Evan Noeth:
+- Estimation: 3 hours
+- Actual: 5 hours
+Sina Asheghalishahi:
+- Estimation: 6 hours
+- Actual: 7 hours
+
 ## System Architecture
 ### Purpose
 Provides a high-level structural overview of the project architecture to assist Project 2 team in extension creation
