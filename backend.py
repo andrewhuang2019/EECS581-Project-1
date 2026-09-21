@@ -51,8 +51,9 @@ def mines_nearby(tile: Tile, board: Board):
 def get_tile_at_coords(coords, board: Board):
     return board.tiles[coords[0]][coords[1]]
 
-# Function written by Sina Asheghalishahi
 # reveals all mines on the board (used when the user clicks on a mine)
+# authored by: Sina Asheghalishahi
+# date created: 9/20/26
 def reveal_all_mines(board: Board):
     for row in range(10):
         for col in range(10):

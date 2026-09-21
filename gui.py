@@ -26,6 +26,7 @@ DOWN_ARROW_SIZE = (8, 8)
 START_BUTTON_POS = (44, 136)
 START_BUTTON_SIZE = (88, 24)
 
+# game over panel constants
 GAME_OVER_SOURCE_RECT = pg.Rect(250, 814, 498, 320)
 GAME_OVER_SIZE = (97, 62)
 
@@ -46,11 +47,12 @@ MENU_BUTTON_RECT = pg.Rect(
     MENU_BUTTON_NATIVE_SIZE[1] * SCALE
 )
 
+# game over blinking interval
 GAME_OVER_BLINK_MS = 500
 
 FACE_POS = (88, 24)
 
-
+# dict for storing all sprite items
 sprites = {}
 screen = pg.display.set_mode((SCALE * SCREEN_WIDTH, SCALE * SCREEN_HEIGHT))
 
@@ -80,8 +82,10 @@ def draw_to_tile(surface, tile_coords):
 
     screen.blit(surface, pixel_coords)
 
-# Function written by Sina Asheghalishahi
+
 # helper that returns tile coords for a given mouse position on click
+# authored by: Sina Asheghalishahi
+# date created: 9/18/26
 def get_clicked_tile(mouse_pos):
 
     # convert mouse pos to tile coords
@@ -209,6 +213,7 @@ def init_sprites():
     # load game over panel
     game_over_sheet = pg.image.load("./assets/game_over_sheet.png").convert_alpha()
 
+    # save game over panel as a sprite
     save_sprites_from_sheet(Sprite.GAME_OVER, GAME_OVER_SOURCE_RECT.topleft, (0, 0), (0, 0), GAME_OVER_SOURCE_RECT.size, game_over_sheet, native_size=GAME_OVER_SIZE)
 
 # draw that 20 to 0 for flags remaining
@@ -296,8 +301,10 @@ def draw_board(board):
             else:
                 # if it is revealed and also a mine, draw the revealed mine tile
                 if (tile.is_mine):
+                    # clicked mine is displayed w/ clicked sprite
                     if(tile is board.clicked_mine):
                         sprite_to_draw = Sprite.CLICKED_MINE
+                    # all unclicked mines are just revealed (w/ unclicked sprites)
                     else:
                         sprite_to_draw = Sprite.MINE
                 elif (tile.value >= 0 and tile.value <= 8):
@@ -363,8 +370,9 @@ def draw_cursor(board):
     draw_to_tile(sprites[Sprite.CURSOR.value], one_below)
 
 
-# Function written by Sina Asheghalishahi
-# draw the face on the start panel based on the game state
+# helper function for drawing the face on the start panel based on the game state
+# authored by: Sina Asheghalishahi, John Rader
+# date created: 9/20/26
 def draw_face(board):
     if(board.is_game_won):
         face = Sprite.VERITY_SUNGLASSES
@@ -373,11 +381,13 @@ def draw_face(board):
     else:
         face = Sprite.VERITY_SMILE
 
+    # draw face image to screen
     screen.blit(sprites[face.value], (FACE_POS[0] * SCALE, FACE_POS[1] * SCALE))
 
 
-# Function written by Sina Asheghalishahi
-# draw game over logic
+# helper function for drawing game over panel when the game ends
+# authored by: Sina Asheghalishahi
+# date created: 9/20/26
 def draw_game_over(board):
     if(board.is_game_won or board.is_game_lost):
         screen.blit(sprites[Sprite.GAME_OVER.value], GAME_OVER_RECT.topleft)
@@ -442,21 +452,25 @@ def main():
                     if (event.button == LEFT_CLICK or event.button == RIGHT_CLICK):
                         mouse_pos = pg.mouse.get_pos()
                         tile_coords = get_clicked_tile(mouse_pos)
+                        # get coords of clicked tile
                         if (tile_coords is not None):
                             col, row = tile_coords
                             tile = get_tile_at_coords((row, col), board)
-
+                            # for left-click, if first click, then do mine blocking logic, and otherwise reveal the clicked tile and surrounding tiles
                             if (event.button == LEFT_CLICK):
                                 if(not board.first_click):
                                     first_click(tile, board)
                                     board.first_click = True
                                 else:
                                     left_click_tile(tile, board)
+                            # for right-click, execute flagging logic
                             if (event.button == RIGHT_CLICK):
                                 right_click_tile(tile, board)
 
+                    # detect game over state change
                     if(board.is_game_lost or board.is_game_won):
                         game_state = "game_over"
+                        # record game over start time
                         game_over_start_time = pg.time.get_ticks()
 
         # draw whichever screen is currently active
@@ -476,6 +490,7 @@ def main():
 
             draw_face(board)
 
+        # during gameover, display everything minus the cursor, and plus the blinking game over panel
         elif game_state == "game_over":
 
             # draw background
@@ -489,8 +504,10 @@ def main():
 
             draw_face(board)
 
+            # calculate elapsed time from game over start time
             elapsed_time = pg.time.get_ticks() - game_over_start_time
-            
+
+            # only draw the game over board during even intervals of 500 ms
             if((elapsed_time // GAME_OVER_BLINK_MS) % 2 == 0):
                 draw_game_over(board)
 
