@@ -2,25 +2,32 @@
 
 ## Person Hours: Estimate vs. Actual
 How it is measured: estimate how long a task would take in person hours based on estimated workload and then whoever had said task would record how many actual hours the task took.
-John Rader: 
+
+### John Rader: 
 - Estimation: 10 hours 
 - Actual: 12 hours
-Peter Barybin: 
+
+### Peter Barybin: 
 - Estimation: 7 hours 
 - Actual: 8 hours
-Cooper Wright:
+
+### Cooper Wright:
 - Estimation: 4 hours
 - Actual: 3 hours
-Andrew Huang:
+
+### Andrew Huang:
 - Estimation: 4 hours
 - Actual: 5 hours
-Emily Farley:
+
+### Emily Farley:
 - Estimation: 7 hours
 - Actual: 8 hours
-Evan Noeth:
+
+### Evan Noeth:
 - Estimation: 3 hours
 - Actual: 5 hours
-Sina Asheghalishahi:
+
+### Sina Asheghalishahi:
 - Estimation: 6 hours
 - Actual: 7 hours
 
