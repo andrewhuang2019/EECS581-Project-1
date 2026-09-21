@@ -257,7 +257,7 @@ def draw_status(board):
 
     screen.blit(surf, tile_coord)
 
-
+# Function written by Evan Noeth
 # draw the start menu (the panel graphic plus the live mine count)
 def draw_start_menu():
     panel_surf = sprites[Sprite.START_PANEL.value]

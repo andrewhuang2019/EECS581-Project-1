@@ -31,6 +31,9 @@ How it is measured: estimate how long a task would take in person hours based on
 - Estimation: 6 hours
 - Actual: 7 hours
 
+## Running the Game
+The game can be played by running the gui.py front-end script.
+
 ## System Architecture
 ### Purpose
 Provides a high-level structural overview of the project architecture to assist Project 2 team in extension creation
