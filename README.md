@@ -14,9 +14,9 @@ Provides a high-level structural overview of the project architecture to assist 
 5. Updates are returned from click handler and shown in GUI
 6. Waits for another user click unless game won/lost was returned, in which case GUI shows game over screen
 ### Key Data Structures
-Board class: initializes 10x10 2d array - holds tile objects to represent game board, tracks game/board info
-Tile class: initializes tile objects that are interacted with on the game board - holds tile info like the number of adjacent mines, if tile is mine or flagged or revealed, and the tile's row and column in the 10x10 2d array
-block_mine set: holds tuples that represent tiles which must be avoided when doing random mine placement
+1. Board class: initializes 10x10 2d array - holds tile objects to represent game board, tracks game/board info
+2. Tile class: initializes tile objects that are interacted with on the game board - holds tile info like the number of adjacent mines, if tile is mine or flagged or revealed, and the tile's row and column in the 10x10 2d array
+3. block_mine set: holds tuples that represent tiles which must be avoided when doing random mine placement
 ### Assumptions
 1. Fixed 10x10 grid of tiles
 2. 10-20 mines (user-specified)
